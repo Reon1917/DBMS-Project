@@ -1,0 +1,91 @@
+# Makeup Service Booking System
+
+## Project Structure
+- Frontend: React + Tailwind (No TypeScript)
+- Backend: Node.js + Oracle DB
+- No Auth (Admin/User mode switch via localStorage)
+
+## Pages
+### User Side
+1. Main Page (/)
+   - Hero section
+   - Featured services
+   - Quick booking section
+   
+2. Services Page (/services)
+   - List all services
+   - Service details
+   - Price information
+   
+3. Appointment Page (/appointment)
+   - Booking form
+   - Time slot selection
+   - Service selection
+   - Employee selection
+
+### Admin Side
+1. Main Page (/admin)
+   - Overview dashboard
+   - Quick stats
+   - Recent appointments
+   
+2. Services Management (/admin/services)
+   - CRUD for services
+   - Price management
+   - Commission rate management
+   
+3. Appointment Management (/admin/appointments)
+   - View all appointments
+   - Update appointment status
+   - Cancel appointments
+   
+4. Employee Management (/admin/employees)
+   - CRUD for employees
+   - Service assignment
+   - Schedule management
+
+## Database Connection
+- lib/db.js: Oracle connection setup
+- API routes for all SQL queries
+
+## Implementation Order
+1. [ ] Setup project structure
+2. [ ] Implement db.js connection
+3. [ ] Create basic layout components
+4. [ ] Implement admin/user mode switcher
+5. [ ] Create API routes for SQL queries
+6. [ ] Implement user pages
+7. [ ] Implement admin pages
+8. [ ] Add error handling
+9. [ ] Add loading states
+10. [ ] Testing and debugging
+
+## API Routes Needed
+1. Services
+   - GET /api/services
+   - POST /api/services (admin)
+   - PUT /api/services/:id (admin)
+   - DELETE /api/services/:id (admin)
+
+2. Appointments
+   - GET /api/appointments
+   - POST /api/appointments
+   - PUT /api/appointments/:id (admin)
+   - DELETE /api/appointments/:id (admin)
+   - GET /api/appointments/timeslots
+
+3. Employees
+   - GET /api/employees (admin)
+   - POST /api/employees (admin)
+   - PUT /api/employees/:id (admin)
+   - DELETE /api/employees/:id (admin)
+
+4. Reports (admin)
+   - GET /api/reports/shop
+   - GET /api/reports/salary
+
+## Notes
+- Using console.log for debugging
+- CURL commands will be added for API testing
+- Minimal UI with Tailwind
+- No external UI libraries
