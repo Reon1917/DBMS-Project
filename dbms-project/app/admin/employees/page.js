@@ -2,16 +2,32 @@
 
 import { useEffect, useState } from 'react';
 
-export default function AdminServicesPage() {
+export default function AdminEmployeesPage() {
+  const [employees, setEmployees] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingService, setEditingService] = useState(null);
+  const [editingEmployee, setEditingEmployee] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    fetchEmployees();
     fetchServices();
   }, []);
+
+  const fetchEmployees = async () => {
+    try {
+      const response = await fetch('/api/employees');
+      if (!response.ok) throw new Error('Failed to fetch employees');
+      const data = await response.json();
+      setEmployees(data);
+    } catch (err) {
+      console.error('Error:', err);
+      setError('Failed to load employees');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchServices = async () => {
     try {
@@ -22,65 +38,64 @@ export default function AdminServicesPage() {
     } catch (err) {
       console.error('Error:', err);
       setError('Failed to load services');
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const serviceData = {
-      title: formData.get('title'),
-      description: formData.get('description'),
-      duration: parseInt(formData.get('duration')),
-      commissionRate: parseFloat(formData.get('commissionRate')),
-      price: parseInt(formData.get('price')),
+    const selectedServices = Array.from(e.target.services.selectedOptions).map(option => parseInt(option.value));
+    
+    const employeeData = {
+      name: formData.get('name'),
+      baseSalary: parseInt(formData.get('baseSalary')),
+      workDays: formData.get('workDays'),
+      services: selectedServices,
     };
 
     try {
-      const url = editingService
-        ? '/api/services'
-        : '/api/services';
-      const method = editingService ? 'PUT' : 'POST';
+      const url = editingEmployee
+        ? `/api/employees?id=${editingEmployee.empId}`
+        : '/api/employees';
+      const method = editingEmployee ? 'PUT' : 'POST';
       
-      if (editingService) {
-        serviceData.id = editingService.serviceId;
+      if (editingEmployee) {
+        employeeData.id = editingEmployee.empId;
       }
 
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(serviceData),
+        body: JSON.stringify(employeeData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save service');
+        throw new Error(errorData.error || 'Failed to save employee');
       }
       
       setIsModalOpen(false);
-      setEditingService(null);
-      fetchServices();
+      setEditingEmployee(null);
+      fetchEmployees();
     } catch (err) {
       console.error('Error:', err);
-      alert(err.message || 'Failed to save service');
+      alert(err.message || 'Failed to save employee');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this service?')) return;
+    if (!confirm('Are you sure you want to delete this employee?')) return;
 
     try {
-      const response = await fetch(`/api/services?id=${id}`, {
+      const response = await fetch(`/api/employees?id=${id}`, {
         method: 'DELETE',
       });
 
-      if (!response.ok) throw new Error('Failed to delete service');
-      fetchServices();
+      if (!response.ok) throw new Error('Failed to delete employee');
+      fetchEmployees();
     } catch (err) {
       console.error('Error:', err);
-      alert('Failed to delete service');
+      alert('Failed to delete employee');
     }
   };
 
@@ -95,15 +110,15 @@ export default function AdminServicesPage() {
   return (
     <div className="container mx-auto px-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Manage Services</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Manage Employees</h1>
         <button
           onClick={() => {
-            setEditingService(null);
+            setEditingEmployee(null);
             setIsModalOpen(true);
           }}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Add New Service
+          Add New Employee
         </button>
       </div>
 
@@ -118,13 +133,16 @@ export default function AdminServicesPage() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
+                Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Duration
+                Base Salary
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Price
+                Work Days
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Services
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -132,26 +150,28 @@ export default function AdminServicesPage() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {services.map((service) => (
-              <tr key={service.serviceId}>
+            {employees.map((employee) => (
+              <tr key={employee.empId}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
-                    {service.serviceTitle}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {service.serviceDes}
+                    {employee.empName}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {service.avgDur} mins
+                  ${employee.empBaseSalary}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  ${service.price}
+                  {employee.empWorkDay}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-500">
+                  <div className="max-w-xs">
+                    {employee.services?.map(service => service.title).join(', ')}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     onClick={() => {
-                      setEditingService(service);
+                      setEditingEmployee(employee);
                       setIsModalOpen(true);
                     }}
                     className="text-blue-600 hover:text-blue-900 mr-4"
@@ -159,7 +179,7 @@ export default function AdminServicesPage() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(service.serviceId)}
+                    onClick={() => handleDelete(employee.empId)}
                     className="text-red-600 hover:text-red-900"
                   >
                     Delete
@@ -175,70 +195,67 @@ export default function AdminServicesPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold mb-6">
-              {editingService ? 'Edit Service' : 'Add New Service'}
+              {editingEmployee ? 'Edit Employee' : 'Add New Employee'}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Title
+                  Name
                 </label>
                 <input
                   type="text"
-                  name="title"
-                  defaultValue={editingService?.serviceTitle}
+                  name="name"
+                  defaultValue={editingEmployee?.empName}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   required
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  defaultValue={editingService?.serviceDes}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  rows="3"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Duration (minutes)
+                  Base Salary ($)
                 </label>
                 <input
                   type="number"
-                  name="duration"
-                  defaultValue={editingService?.avgDur}
+                  name="baseSalary"
+                  defaultValue={editingEmployee?.empBaseSalary}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   required
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Commission Rate (0-1)
+                  Work Days
                 </label>
                 <input
-                  type="number"
-                  name="commissionRate"
-                  defaultValue={editingService?.comRate}
-                  step="0.01"
-                  min="0"
-                  max="1"
+                  type="text"
+                  name="workDays"
+                  defaultValue={editingEmployee?.empWorkDay}
+                  placeholder="e.g. Mon, Tue, Wed"
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   required
                 />
               </div>
               <div className="mb-6">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Price ($)
+                  Services
                 </label>
-                <input
-                  type="number"
-                  name="price"
-                  defaultValue={editingService?.price}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                <select
+                  name="services"
+                  multiple
+                  className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   required
-                />
+                >
+                  {services.map((service) => (
+                    <option
+                      key={service.serviceId}
+                      value={service.serviceId}
+                      selected={editingEmployee?.services?.some(s => s.id === service.serviceId)}
+                    >
+                      {service.serviceTitle}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple services</p>
               </div>
               <div className="flex justify-end">
                 <button

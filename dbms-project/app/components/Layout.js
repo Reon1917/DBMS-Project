@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ModeSwitcher from './ModeSwitcher';
+import AdminSwitch from './AdminSwitch';
 
 export default function Layout({ children }) {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -57,6 +58,7 @@ export default function Layout({ children }) {
               </div>
             </div>
             <ModeSwitcher />
+            <AdminSwitch />
           </div>
         </div>
       </nav>

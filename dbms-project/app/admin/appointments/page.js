@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AdminAppointmentsPage() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetchAppointments();
@@ -105,7 +107,7 @@ export default function AdminAppointmentsPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {appointments.map((appointment) => (
-                <tr key={appointment.aptId}>
+                <tr key={appointment.aptId} className="hover:bg-gray-50 cursor-pointer" onClick={() => router.push(`/admin/appointments/${appointment.aptId}`)}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
                       {appointment.custName}
@@ -135,7 +137,10 @@ export default function AdminAppointmentsPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select
                       value={appointment.aptStatus}
-                      onChange={(e) => handleStatusChange(appointment.aptId, e.target.value)}
+                      onChange={(e) => {
+                        e.stopPropagation(); // Prevent row click
+                        handleStatusChange(appointment.aptId, e.target.value);
+                      }}
                       className={`rounded-full px-3 py-1 text-sm font-semibold ${
                         appointment.aptStatus === 'complete'
                           ? 'bg-green-100 text-green-800'
@@ -151,7 +156,10 @@ export default function AdminAppointmentsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      onClick={() => handleDelete(appointment.aptId)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row click
+                        handleDelete(appointment.aptId);
+                      }}
                       className="text-red-600 hover:text-red-900"
                     >
                       Delete
