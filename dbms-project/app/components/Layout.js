@@ -57,8 +57,33 @@ export default function Layout({ children }) {
                 ))}
               </div>
             </div>
-            <ModeSwitcher />
-            <AdminSwitch />
+            <div className="flex items-center space-x-4">
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const custId = e.target.custId.value;
+                  if (custId) {
+                    window.location.href = `/customer-appointments/${custId}`;
+                  }
+                }}
+                className="flex items-center"
+              >
+                <input
+                  type="number"
+                  name="custId"
+                  placeholder="Enter Customer ID"
+                  className="px-3 py-1 border rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                <button
+                  type="submit"
+                  className="px-3 py-1 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  Search
+                </button>
+              </form>
+              <ModeSwitcher />
+              <AdminSwitch />
+            </div>
           </div>
         </div>
       </nav>

@@ -106,6 +106,13 @@ SELECT service.service_id
 FROM service
 WHERE service.service_title = 'Male Hair Cut and Wash';
 
+-- Employee list with service they can provide
+
+SELECT employee.emp_id, employee.emp_name, employee.emp_base_salary, employee.emp_work_day, service.service_title
+FROM employee_service LEFT JOIN employee ON employee_service.emp_id = employee.emp_id
+LEFT JOIN service ON employee_service.service_id = service.service_id
+ORDER BY employee.emp_id;
+
 DECLARE
     v_emp_id INT := 3;
     v_emp_name VARCHAR2(50) := 'Peter';
@@ -121,14 +128,6 @@ BEGIN
     INSERT INTO employee_service (emp_id, service_id) VALUES (v_emp_id,2);
     INSERT INTO employee_service (emp_id, service_id) VALUES (v_emp_id,3);
 END;
-
-
--- Employee list with service they can provide
-
-SELECT employee.emp_id, employee.emp_name, employee.emp_base_salary, employee.emp_work_day, service.service_title
-FROM employee_service LEFT JOIN employee ON employee_service.emp_id = employee.emp_id
-LEFT JOIN service ON employee_service.service_id = service.service_id
-ORDER BY employee.emp_id;
 
 --employee_service_record
 
@@ -295,4 +294,23 @@ WHERE employee_service_record.esr_id = 2;
 UPDATE employee_product_record
 SET employee_product_record.payment = 'paid'
 WHERE employee_product_record.epr_id = 2;
+
+
+-- customer want to cancel his appointment
+-- he have cust_id = 1, apt_date = '17-02-2025';
+
+SELECT appointment.apt_id
+FROM appointment
+WHERE appointment.cust_id = 1 AND apt_date = '17-02-2025';
+
+-- the result is the apt_id we want
+-- suppose the answer is 1
+
+UPDATE appointment
+SET appointment.apt_status = 'cancel'
+WHERE appointment.apt_id = 1;
+
+UPDATE appointment_time
+SET appointment_time.apt_status = 'cancel'
+WHERE appointment_time.apt_id = 1;
 
