@@ -91,7 +91,8 @@ function toCamelCase(rows) {
 // Execute a query and return results in camelCase
 async function executeQueryCamelCase(sql, params = [], options = {}) {
   const result = await executeQuery(sql, params, options);
-  return toCamelCase(result);
+  // Only transform if there are rows to transform
+  return result ? toCamelCase(result) : result;
 }
 
 module.exports = {

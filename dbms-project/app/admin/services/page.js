@@ -54,14 +54,17 @@ export default function AdminServicesPage() {
         body: JSON.stringify(serviceData),
       });
 
-      if (!response.ok) throw new Error('Failed to save service');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save service');
+      }
       
       setIsModalOpen(false);
       setEditingService(null);
       fetchServices();
     } catch (err) {
       console.error('Error:', err);
-      alert('Failed to save service');
+      alert(err.message || 'Failed to save service');
     }
   };
 
