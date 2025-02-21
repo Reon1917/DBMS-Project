@@ -4,31 +4,33 @@ import { NextResponse } from 'next/server';
 // GET /api/employees
 export async function GET() {
   try {
+    // First get employees with basic info
     const employees = await executeQueryCamelCase(`
       SELECT 
         e.emp_id,
         e.emp_name,
         e.emp_base_salary,
-        e.emp_work_day,
-        LISTAGG(s.service_id, ',') WITHIN GROUP (ORDER BY s.service_id) as service_ids,
-        LISTAGG(s.service_title, ',') WITHIN GROUP (ORDER BY s.service_id) as service_titles
+        e.emp_work_day
       FROM employee e
-      LEFT JOIN employee_service es ON e.emp_id = es.emp_id
-      LEFT JOIN service s ON es.service_id = s.service_id
-      GROUP BY e.emp_id, e.emp_name, e.emp_base_salary, e.emp_work_day
       ORDER BY e.emp_id
     `);
 
-    // Process the results to create a services array
-    const processedEmployees = employees.map(emp => ({
-      ...emp,
-      services: emp.serviceTitles ? emp.serviceTitles.split(',').map((title, i) => ({
-        id: emp.serviceIds.split(',')[i],
-        title
-      })) : []
-    }));
+    // Then get their services
+    for (const employee of employees) {
+      const services = await executeQueryCamelCase(`
+        SELECT 
+          s.service_id as id,
+          s.service_title as title
+        FROM employee_service es
+        JOIN service s ON es.service_id = s.service_id
+        WHERE es.emp_id = :1
+        ORDER BY s.service_id
+      `, [employee.empId]);
+      
+      employee.services = services;
+    }
 
-    return NextResponse.json(processedEmployees);
+    return NextResponse.json(employees);
   } catch (error) {
     console.error('Error fetching employees:', error);
     return NextResponse.json(
@@ -89,8 +91,10 @@ export async function POST(request) {
 // PUT /api/employees/:id
 export async function PUT(request) {
   try {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
     const body = await request.json();
-    const { id, name, baseSalary, workDays, services } = body;
+    const { name, baseSalary, workDays, services } = body;
 
     // Update employee
     await executeQueryCamelCase(
