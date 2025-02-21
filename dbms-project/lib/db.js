@@ -1,42 +1,57 @@
 const oracledb = require('oracledb');
 const path = require('path');
 
-// Configure thick mode with instant client
-try {
-  // Set Oracle Client library directory
-  const clientPath = process.env.ORACLE_CLIENT_PATH;
-  if (!clientPath) {
-    throw new Error('ORACLE_CLIENT_PATH environment variable is not set');
+// Configure Oracle Client
+const initializeOracleClient = () => {
+  try {
+    const clientPath = process.env.ORACLE_CLIENT_PATH;
+    if (!clientPath) {
+      throw new Error('ORACLE_CLIENT_PATH environment variable is not set');
+    }
+    
+    console.log('Initializing Oracle Client at:', clientPath);
+    oracledb.initOracleClient({ libDir: clientPath });
+    console.log('Oracle Client initialized successfully');
+  } catch (err) {
+    if (err.message.includes('DPI-1047')) {
+      console.log('Oracle Client library is already initialized');
+    } else {
+      console.error('Error initializing Oracle Client:', err);
+      throw err;
+    }
   }
-  
-  console.log('Initializing Oracle Client at:', clientPath);
-  oracledb.initOracleClient({ libDir: clientPath });
-  console.log('Oracle Client initialized successfully');
-} catch (err) {
-  if (err.message.includes('DPI-1047')) {
-    console.log('Oracle Client library is already initialized');
-  } else {
-    console.error('Error initializing Oracle Client:', err);
-    throw err;
-  }
-}
+};
 
-// Enable auto commit
+// Initialize client
+initializeOracleClient();
+
+// Enable auto commit for all connections
 oracledb.autoCommit = true;
 
 // Connection configuration
 const dbConfig = {
   user: process.env.ORACLE_USER,
   password: process.env.ORACLE_PASSWORD,
-  connectString: process.env.ORACLE_CONNECT_STRING, // Note: Using ORACLE_CONNECT_STRING instead of ORACLE_CONNECTION_STRING
-  // Enable thick mode
+  connectString: process.env.ORACLE_CONNECT_STRING,
   libDir: process.env.ORACLE_CLIENT_PATH
 };
 
-// Get a connection from the pool
+// Connection error messages
+const CONNECTION_ERRORS = {
+  INVALID_CREDENTIALS: 'Invalid database credentials',
+  CONNECTION_FAILED: 'Failed to connect to database',
+  QUERY_FAILED: 'Failed to execute query',
+  CONNECTION_CLOSED: 'Failed to close connection'
+};
+
+/**
+ * Get a database connection
+ * @returns {Promise<Connection>} Oracle connection object
+ * @throws {Error} If connection fails
+ */
 async function getConnection() {
   try {
-    console.log('Attempting to connect with config:', {
+    console.log('Connecting to database with config:', {
       ...dbConfig,
       password: '***hidden***'
     });
@@ -44,12 +59,23 @@ async function getConnection() {
     console.log('Database connection established');
     return connection;
   } catch (err) {
-    console.error('Error getting database connection:', err);
-    throw err;
+    console.error('Database connection error:', err);
+    throw new Error(
+      err.message.includes('ORA-01017') 
+        ? CONNECTION_ERRORS.INVALID_CREDENTIALS 
+        : CONNECTION_ERRORS.CONNECTION_FAILED
+    );
   }
 }
 
-// Execute a query and return results
+/**
+ * Execute a database query
+ * @param {string} sql - SQL query to execute
+ * @param {Array} params - Query parameters
+ * @param {Object} options - Query options
+ * @returns {Promise<Array>} Query results
+ * @throws {Error} If query fails
+ */
 async function executeQuery(sql, params = [], options = {}) {
   let connection;
   try {
@@ -61,21 +87,28 @@ async function executeQuery(sql, params = [], options = {}) {
     });
     return result.rows;
   } catch (err) {
-    console.error('Error executing query:', err);
-    throw err;
+    console.error('Query execution error:', err);
+    throw new Error(CONNECTION_ERRORS.QUERY_FAILED);
   } finally {
     if (connection) {
       try {
         await connection.close();
       } catch (err) {
         console.error('Error closing connection:', err);
+        throw new Error(CONNECTION_ERRORS.CONNECTION_CLOSED);
       }
     }
   }
 }
 
-// Helper to convert Oracle results to camelCase objects
+/**
+ * Convert Oracle column names to camelCase
+ * @param {Array} rows - Query results
+ * @returns {Array} Transformed results
+ */
 function toCamelCase(rows) {
+  if (!rows || !Array.isArray(rows)) return rows;
+  
   return rows.map(row => {
     const newRow = {};
     Object.keys(row).forEach(key => {
@@ -88,11 +121,16 @@ function toCamelCase(rows) {
   });
 }
 
-// Execute a query and return results in camelCase
+/**
+ * Execute a query and return results in camelCase
+ * @param {string} sql - SQL query to execute
+ * @param {Array} params - Query parameters
+ * @param {Object} options - Query options
+ * @returns {Promise<Array>} Transformed query results
+ */
 async function executeQueryCamelCase(sql, params = [], options = {}) {
   const result = await executeQuery(sql, params, options);
-  // Only transform if there are rows to transform
-  return result ? toCamelCase(result) : result;
+  return toCamelCase(result);
 }
 
 module.exports = {
