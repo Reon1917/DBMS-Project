@@ -1,11 +1,18 @@
 # Makeup Service Booking System
 
 ## Project Overview
-- Frontend: React + Tailwind (No TypeScript)
+- Frontend: React + Next.js 15 + Tailwind
 - Backend: Node.js + Oracle DB
 - No Auth (Admin/User mode switch via localStorage)
 - Toast notifications with react-hot-toast
 - Responsive design with mobile-first approach
+
+## Recent Updates
+- Fixed Next.js 15 params handling in customer appointments
+- Added basic test suite for customer appointments
+- Improved navbar UI/UX with compact mode switcher
+- Customer search now only visible in admin mode
+- Better responsive layout for navigation
 
 ## Completed Features
 1. User Features
@@ -15,6 +22,10 @@
    - ✅ Toast notifications for feedback
    - ✅ Responsive booking form
    - ✅ Time slot availability check
+   - ✅ Customer appointment tracking
+   - ✅ Appointment cancellation
+   - ✅ Customer search by ID
+   - ✅ Automatic customer registration
 
 2. Admin Features
    - ✅ Service management (CRUD)
@@ -24,6 +35,9 @@
    - ✅ Service status updates
    - ✅ Additional service booking
    - ✅ Admin/User mode switcher
+   - ✅ Batch appointment updates
+   - ✅ Service completion tracking
+   - ✅ Employee service assignments
 
 3. Technical Implementations
    - ✅ Database connection setup
@@ -33,6 +47,9 @@
    - ✅ Employee service filtering
    - ✅ Loading states
    - ✅ Error boundaries
+   - ✅ Customer data persistence
+   - ✅ Appointment status management
+   - ✅ Service record tracking
 
 ## Project Structure
 ### User Side Pages
@@ -40,6 +57,7 @@
    - Hero section
    - Featured services
    - Quick booking section
+   - Customer search
    
 2. Services Page (/services)
    - List all services
@@ -52,6 +70,15 @@
    - Dynamic time slot selection
    - Service-based employee filtering
    - Real-time availability check
+   - Customer info collection
+
+4. Customer Appointments (/customer-appointments/[id])
+   - View appointments by customer ID
+   - Appointment details
+   - Cancellation option
+   - Status tracking
+   - Basic test coverage
+   - Admin-only access
 
 ### Admin Side Pages
 1. Dashboard (/admin)
@@ -63,6 +90,7 @@
    - Service CRUD operations
    - Price management
    - Commission rates
+   - Duration settings
    
 3. Appointment Management
    - List View (/admin/appointments)
@@ -70,6 +98,7 @@
      * Quick status updates
      * Delete functionality
      * Click-through to details
+     * Batch status updates
    
    - Detail View (/admin/appointments/[id])
      * ✅ Back navigation
@@ -78,11 +107,33 @@
      * ✅ Add additional services
      * ✅ Employee availability check
      * ✅ Service completion tracking
+     * ✅ Time slot display
    
 4. Employee Management (/admin/employees)
    - Employee CRUD
    - Service assignment
    - Schedule management
+   - Commission tracking
+
+## UI/UX Improvements
+1. Navigation
+   - Compact mode switcher with visual feedback
+   - Admin-only customer search
+   - Responsive navigation menu
+   - Clear visual hierarchy
+
+2. Layout
+   - Sticky header
+   - Full-height layout
+   - Consistent spacing
+   - Mobile-first approach
+
+## Testing
+1. Unit Tests
+   - Customer appointments page tests
+   - Loading state tests
+   - Error handling tests
+   - Basic component tests
 
 ## Database Implementation
 1. Connection Management (lib/db.js)
@@ -90,12 +141,16 @@
    - Query execution helpers
    - Error handling
    - Logging system
+   - Connection pooling
+   - Query result transformation
 
 2. Critical Queries
    - Appointment booking
    - Time slot management
    - Service records
    - Employee assignments
+   - Customer management
+   - Status tracking
 
 ## API Routes
 1. Services
@@ -119,6 +174,10 @@
    - POST /api/employees (admin)
    - PUT /api/employees/:id (admin)
    - DELETE /api/employees/:id (admin)
+
+4. Customer Appointments
+   - GET /api/customer-appointments/:id
+   - DELETE /api/customer-appointments/:id
 
 ## Remaining Tasks
 1. Database Optimization
@@ -155,18 +214,21 @@
    - Server-side error logging
    - Graceful fallbacks
    - User-friendly error messages
+   - Database error handling
 
 3. State Management
    - React hooks for local state
    - Props for component communication
    - Context for global state (mode switching)
    - Local storage for persistence
+   - Form state management
 
 4. Performance Considerations
    - Optimized database queries
    - Proper indexing
    - Lazy loading where appropriate
    - Minimal re-renders
+   - Efficient time slot calculations
 
 ## Notes
 - Console logging enabled for debugging
@@ -176,3 +238,6 @@
 - Toast notifications for feedback
 - Employee service filtering implemented
 - Time slot blocking based on duration
+- Customer data persistence
+- Appointment status tracking
+- Service record management

@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { use } from 'react';
 
 export default function AppointmentDetailPage({ params }) {
+  const id = use(params).id;
   const router = useRouter();
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,12 +23,12 @@ export default function AppointmentDetailPage({ params }) {
     fetchAppointmentDetails();
     fetchServices();
     fetchEmployees();
-  }, [params.id]);
+  }, [id]);
 
   const fetchAppointmentDetails = async () => {
     try {
-      console.log('Fetching appointment details for ID:', params.id);
-      const response = await fetch(`/api/appointments/${params.id}`);
+      console.log('Fetching appointment details for ID:', id);
+      const response = await fetch(`/api/appointments/${id}`);
       if (!response.ok) throw new Error('Failed to fetch appointment details');
       const data = await response.json();
       console.log('Appointment details:', data);
@@ -67,7 +69,7 @@ export default function AppointmentDetailPage({ params }) {
   const handleStatusUpdate = async (serviceRecordId, newStatus) => {
     try {
       console.log('Updating service status:', { serviceRecordId, newStatus });
-      const response = await fetch(`/api/appointments/${params.id}/services/${serviceRecordId}/status`, {
+      const response = await fetch(`/api/appointments/${id}/services/${serviceRecordId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -86,7 +88,7 @@ export default function AppointmentDetailPage({ params }) {
     e.preventDefault();
     try {
       console.log('Adding new service:', newService);
-      const response = await fetch(`/api/appointments/${params.id}/services`, {
+      const response = await fetch(`/api/appointments/${id}/services`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newService)

@@ -6,7 +6,8 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 export default function CustomerAppointments() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params.id;
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
