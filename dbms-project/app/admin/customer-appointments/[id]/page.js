@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
-export default function CustomerAppointments() {
+export default function AdminCustomerAppointments() {
   const params = useParams();
   const id = params.id;
   const [appointments, setAppointments] = useState([]);
@@ -52,7 +52,7 @@ export default function CustomerAppointments() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
+      <div data-testid="loading-spinner" className="flex justify-center items-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -63,8 +63,8 @@ export default function CustomerAppointments() {
       <div className="text-center py-10">
         <h2 className="text-2xl font-semibold mb-4">No appointments found</h2>
         <p className="text-gray-600 mb-4">There are no appointments for customer ID: {id}</p>
-        <Link href="/" className="text-blue-500 hover:underline">
-          Return to Home
+        <Link href="/admin/appointments" className="text-blue-500 hover:underline">
+          Return to Appointments
         </Link>
       </div>
     );
@@ -72,7 +72,18 @@ export default function CustomerAppointments() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-semibold mb-6">Appointments for Customer ID: {id}</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold">Appointments for Customer ID: {id}</h2>
+        <Link 
+          href="/admin/appointments" 
+          className="text-blue-500 hover:text-blue-600 flex items-center"
+        >
+          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Appointments
+        </Link>
+      </div>
       <div className="grid gap-6">
         {appointments.map((appointment) => (
           <div
