@@ -9,14 +9,14 @@ const initializeOracleClient = () => {
       throw new Error('ORACLE_CLIENT_PATH environment variable is not set');
     }
     
-    console.log('Initializing Oracle Client at:', clientPath);
+    console.log('🔌 Oracle Client Path:', clientPath);
     oracledb.initOracleClient({ libDir: clientPath });
-    console.log('Oracle Client initialized successfully');
+    console.log('✅ Oracle Client ready');
   } catch (err) {
     if (err.message.includes('DPI-1047')) {
-      console.log('Oracle Client library is already initialized');
+      console.log('ℹ️ Oracle Client already initialized');
     } else {
-      console.error('Error initializing Oracle Client:', err);
+      console.error('❌ Oracle Client init failed:', err.message);
       throw err;
     }
   }
@@ -36,6 +36,31 @@ const dbConfig = {
   libDir: process.env.ORACLE_CLIENT_PATH
 };
 
+// Pool configuration
+const poolConfig = {
+  ...dbConfig,
+  poolMin: 10,
+  poolMax: 25,
+  poolIncrement: 5,
+  poolTimeout: 60,
+  queueTimeout: 60000
+};
+
+// Initialize the connection pool
+let pool;
+async function initPool() {
+  try {
+    pool = await oracledb.createPool(poolConfig);
+    console.log('🏊 Connection pool ready');
+  } catch (err) {
+    console.error('❌ Pool creation failed:', err.message);
+    throw err;
+  }
+}
+
+// Initialize pool
+initPool();
+
 // Connection error messages
 const CONNECTION_ERRORS = {
   INVALID_CREDENTIALS: 'Invalid database credentials',
@@ -51,12 +76,10 @@ const CONNECTION_ERRORS = {
  */
 async function getConnection() {
   try {
-    console.log('Connecting to database with config:', {
-      ...dbConfig,
-      password: '***hidden***'
-    });
-    const connection = await oracledb.getConnection(dbConfig);
-    console.log('Database connection established');
+    if (!pool) {
+      await initPool();
+    }
+    const connection = await pool.getConnection();
     return connection;
   } catch (err) {
     console.error('Database connection error:', err);
@@ -80,21 +103,38 @@ async function executeQuery(sql, params = [], options = {}) {
   let connection;
   try {
     connection = await getConnection();
-    console.log('Executing query:', sql, 'with params:', params);
+    // Get first line of SQL for compact logging
+    const sqlFirstLine = sql.split('\n')[0].trim();
+    const compactSql = sqlFirstLine + (sql.includes('\n') ? '...' : '');
+    
+    console.log(`📝 Query: ${compactSql}`);
+    if (params.length > 0) {
+      console.log(`📎 Params:`, JSON.stringify(params, null, 0));
+    }
+    
     const result = await connection.execute(sql, params, {
       outFormat: oracledb.OUT_FORMAT_OBJECT,
       ...options
     });
+    
+    // Log results in compact JSON
+    if (result.rows?.length > 0) {
+      console.log(`✨ Result (${result.rows.length} rows):`, 
+        JSON.stringify(result.rows.slice(0, 2), null, 0) + 
+        (result.rows.length > 2 ? '...' : '')
+      );
+    }
+    
     return result.rows;
   } catch (err) {
-    console.error('Query execution error:', err);
+    console.error('❌ Query failed:', err.message);
     throw new Error(CONNECTION_ERRORS.QUERY_FAILED);
   } finally {
     if (connection) {
       try {
         await connection.close();
       } catch (err) {
-        console.error('Error closing connection:', err);
+        console.error('❌ Connection close failed:', err.message);
         throw new Error(CONNECTION_ERRORS.CONNECTION_CLOSED);
       }
     }
