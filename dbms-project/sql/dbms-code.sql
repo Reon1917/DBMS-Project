@@ -49,6 +49,9 @@ INSERT INTO service (service_id,service_title,service_des,avg_dur,com_rate,price
 INSERT INTO service (service_id,service_title,service_des,avg_dur,com_rate,price) VALUES (18,'Eyelash Extensions','This is base price, the price would be higher based on the choice of brand.',60,0.25,1000);
 INSERT INTO service (service_id,service_title,service_des,avg_dur,com_rate,price) VALUES (19,'Men makeup','This is base price, the price would be higher based on the choice of brand.',45,0.2,600);
 INSERT INTO service (service_id,service_title,service_des,avg_dur,com_rate,price) VALUES (20,'Natural look makeup','This is base price, the price would be higher based on the choice of brand.',45,0.2,500);
+INSERT INTO service (service_id,service_title,service_des,avg_dur,com_rate,price) VALUES (21,'Cosplay Makeup - Basic (1 Day)','Basic cosplay makeup and styling for simple characters',480,0.35,2000);
+INSERT INTO service (service_id,service_title,service_des,avg_dur,com_rate,price) VALUES (22,'Cosplay Makeup - Advanced (2-3 Days)','Complex cosplay makeup with prosthetics and detailed styling',1440,0.4,4000);
+INSERT INTO service (service_id,service_title,service_des,avg_dur,com_rate,price) VALUES (23,'Cosplay Makeup - Premium (4-7 Days)','Premium cosplay transformation with full body makeup, complex prosthetics, and special effects',3360,0.45,8000);
 
 CREATE TABLE employee_service (
     emp_id int NOT NULL,
