@@ -36,6 +36,31 @@ const dbConfig = {
   libDir: process.env.ORACLE_CLIENT_PATH
 };
 
+// Pool configuration
+const poolConfig = {
+  ...dbConfig,
+  poolMin: 10,
+  poolMax: 25,
+  poolIncrement: 5,
+  poolTimeout: 60,
+  queueTimeout: 60000
+};
+
+// Initialize the connection pool
+let pool;
+async function initPool() {
+  try {
+    pool = await oracledb.createPool(poolConfig);
+    console.log('Connection pool created');
+  } catch (err) {
+    console.error('Pool creation error:', err);
+    throw err;
+  }
+}
+
+// Initialize pool
+initPool();
+
 // Connection error messages
 const CONNECTION_ERRORS = {
   INVALID_CREDENTIALS: 'Invalid database credentials',
@@ -51,12 +76,10 @@ const CONNECTION_ERRORS = {
  */
 async function getConnection() {
   try {
-    console.log('Connecting to database with config:', {
-      ...dbConfig,
-      password: '***hidden***'
-    });
-    const connection = await oracledb.getConnection(dbConfig);
-    console.log('Database connection established');
+    if (!pool) {
+      await initPool();
+    }
+    const connection = await pool.getConnection();
     return connection;
   } catch (err) {
     console.error('Database connection error:', err);
