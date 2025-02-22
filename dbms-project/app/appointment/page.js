@@ -182,7 +182,7 @@ export default function AppointmentPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Book an Appointment</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Reserve Time Slot</h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -329,7 +329,7 @@ export default function AppointmentPage() {
           type="submit"
           className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
         >
-          Book Appointment
+          Reserve Time Slot
         </button>
       </form>
     </div>
