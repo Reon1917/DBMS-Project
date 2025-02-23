@@ -8,6 +8,11 @@
 - Responsive design with mobile-first approach
 
 ## Recent Updates
+- Added multi-day appointment booking for cosplay services
+- Added support for services spanning up to 7 days
+- Improved appointment UI with collapsible day sections
+- Enhanced time slot calculation for multi-day services
+- Added duration-based day calculation
 - Fixed Next.js 15 params handling in customer appointments
 - Added basic test suite for customer appointments
 - Improved navbar UI/UX with compact mode switcher
@@ -18,6 +23,8 @@
 1. User Features
    - ✅ Service browsing and details
    - ✅ Appointment booking with time slots
+   - ✅ Multi-day appointment booking
+   - ✅ Cosplay makeup scheduling (1-7 days)
    - ✅ Employee selection based on service
    - ✅ Toast notifications for feedback
    - ✅ Responsive booking form
@@ -64,13 +71,17 @@
    - Service details
    - Price information
    - Direct booking links
+   - Multi-day service indicators
    
 3. Appointment Page (/appointment)
    - Smart booking form
-   - Dynamic time slot selection
+   - Multi-day appointment support
+   - Dynamic time slot selection per day
    - Service-based employee filtering
    - Real-time availability check
    - Customer info collection
+   - Duration-based day calculation
+   - Collapsible day sections
 
 4. Customer Appointments (/customer-appointments/[id])
    - View appointments by customer ID
@@ -145,9 +156,9 @@
    - Query result transformation
 
 2. Critical Queries
-   - Appointment booking
-   - Time slot management
-   - Service records
+   - Multi-day appointment booking
+   - Time slot management per day
+   - Service records with duration handling
    - Employee assignments
    - Customer management
    - Status tracking
@@ -188,11 +199,14 @@
    - [ ] Implement query caching
 
 2. Feature Enhancements
-   - [ ] Add buffer time between appointments
-   - [ ] Implement conflict resolution
+   - [ ] Add buffer time between multi-day appointments
+   - [ ] Implement conflict resolution for overlapping days
    - [ ] Add visual slot availability indicators
-   - [ ] Optimize slot querying
+   - [ ] Optimize slot querying for multi-day services
    - [ ] Add batch status updates
+   - [ ] Add progress tracking for multi-day services
+   - [ ] Implement service continuation validation
+   - [ ] Add break time configuration between days
 
 3. Testing & QA
    - [ ] Unit tests for API routes

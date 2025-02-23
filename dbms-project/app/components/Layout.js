@@ -38,7 +38,7 @@ export default function Layout({ children }) {
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
                 <Link href="/" className="text-xl font-bold text-gray-800">
-                  Makeup Service
+                  Cosplay Service
                 </Link>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -46,7 +46,7 @@ export default function Layout({ children }) {
                   Services
                 </Link>
                 <Link href="/appointment" className="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300">
-                  Book Appointment
+                  Reserve Appointment
                 </Link>
                 {isAdmin && (
                   <>
