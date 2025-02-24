@@ -55,7 +55,7 @@ export default function Home() {
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-gray-900">Featured Services</h2>
             <p className="mt-4 text-lg text-gray-500">
-              Choose from our most popular beauty services
+              Choose from our most popular services
             </p>
           </div>
 

@@ -117,7 +117,7 @@ export default function Layout({ children }) {
       <footer className="bg-white border-t">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <p className="text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Makeup Service. All rights reserved.
+            © {new Date().getFullYear()} Cosplay Makeup Service. All rights reserved.
           </p>
         </div>
       </footer>

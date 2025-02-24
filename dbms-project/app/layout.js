@@ -3,8 +3,8 @@ import Layout from './components/Layout';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata = {
-  title: 'Makeup Service',
-  description: 'Book your makeup service appointment',
+  title: 'Cosplay Makeup Service',
+  description: 'Book your cosplay service appointment',
 };
 
 export default function RootLayout({ children }) {
